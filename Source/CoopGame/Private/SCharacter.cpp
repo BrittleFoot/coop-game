@@ -79,3 +79,34 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
+
+FVector ASCharacter::GetPawnViewLocation() const
+{
+    if (CameraComponent)
+    {
+        return CameraComponent->GetComponentLocation();
+    }
+
+    return Super::GetPawnViewLocation();
+}
+
+
+void ASCharacter::Pickup(AActor* Actor)
+{
+    if (OnPickup(Actor))
+    {
+        Actor->Destroy();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
