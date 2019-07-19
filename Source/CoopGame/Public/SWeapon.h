@@ -26,13 +26,10 @@ protected:
 	virtual void BeginPlay() override;
 
     UFUNCTION(BlueprintCallable, Category = "Weapon")
-    void Fire();
+    virtual void Fire();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     USkeletalMeshComponent* MeshComponent;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-    TSubclassOf<UDamageType> DamageType;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
     float DamageAmount;
@@ -58,5 +55,8 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+    TSubclassOf<UDamageType> DamageType;
 
 };
