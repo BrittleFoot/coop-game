@@ -7,6 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "CoopGame.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 
 
 static int32 DebugWeaponDrawing = 0;
@@ -42,6 +44,7 @@ void ASTracingWeapon::Fire()
     QueryParams.AddIgnoredActor(MyOwner);
     QueryParams.AddIgnoredActor(this);
     QueryParams.bTraceComplex = true;
+    QueryParams.bReturnPhysicalMaterial = true;
 
     FVector TracerEndPoint = TraceEnd;
 
@@ -63,9 +66,25 @@ void ASTracingWeapon::Fire()
             DamageType
         );
 
-        if (ImpactEffect)
+        EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+        UParticleSystem* SelectedEffect = DefaultImpactEffect;
+        switch (SurfaceType)
         {
-            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+            case SURFACE__FLESH_DEFAULT:
+                SelectedEffect = FleshImpactEffect;
+                break;
+            case SURFACE__FLESH_VULNERABLE:
+                SelectedEffect = VulnerableImpactEffect;
+                break;
+            default:
+                break;
+        }
+
+
+        if (SelectedEffect)
+        {
+            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
         }
     }
 
