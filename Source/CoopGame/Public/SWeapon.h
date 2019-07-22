@@ -22,11 +22,7 @@ public:
 	ASWeapon();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
-    UFUNCTION(BlueprintCallable, Category = "Weapon")
-    virtual void Fire();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     USkeletalMeshComponent* MeshComponent;
@@ -53,8 +49,9 @@ protected:
 
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
+    UFUNCTION(BlueprintCallable, Category = "Weapon")
+    virtual void Fire();
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
     TSubclassOf<UDamageType> DamageType;

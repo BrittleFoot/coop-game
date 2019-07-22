@@ -13,6 +13,16 @@
 #include "SWeapon.h"
 
 
+static int32 DebugProjectileDrawing = 0;
+
+FAutoConsoleVariableRef CVARDebugProjectileDrawing(
+    TEXT("COOP.DebugProjectiles"),
+    DebugProjectileDrawing,
+    TEXT("Draw Debug Spheres for Projectiles"),
+    ECVF_Cheat
+);
+
+
 
 // Sets default values
 ASProjectile::ASProjectile()
@@ -41,7 +51,7 @@ ASProjectile::ASProjectile()
     ProjectileMovement->Friction = 0.3;
 
     BaseDamage = 100.f;
-    DamageRadius = 100.f;
+    DamageRadius = 150.f;
 
     InitialLifeSpan = 1.0f;
     RootComponent = CollisionComponent;
@@ -81,7 +91,10 @@ void ASProjectile::Explode(AActor* Actor)
         Instigator->GetInstigatorController()
     );
 
-    DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 12, FColor::Cyan, false,  1.f);
+    if (DebugProjectileDrawing > 0)
+    {
+        DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 12, FColor::Cyan, false,  1.f);
+    }
 
     if (ExplosionEffect)
     {

@@ -9,6 +9,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class ASWeapon;
 
 
 UCLASS()
@@ -42,6 +43,26 @@ protected:
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Character")
     bool OnPickup(AActor* Actor);
+
+
+    bool bWantsToZoom;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Player")
+    float ZoomedFOV;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100))
+    float ZoomInterpSpeed;
+
+    float DefaultFOV;
+
+    void BeginZoom();
+
+    void EndZoom();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    ASWeapon* CurrentWeapon;
+
+    void Fire();
 
 public:
 	// Called every frame

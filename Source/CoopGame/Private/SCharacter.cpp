@@ -5,6 +5,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "SWeapon.h"
+
 
 
 // Sets default values
@@ -28,12 +30,19 @@ void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+    DefaultFOV = CameraComponent->FieldOfView;
+
 }
 
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+    float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
+    float NewFOV = FMath::FInterpTo(CameraComponent->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
+
+    CameraComponent->SetFieldOfView(NewFOV);
 }
 
 void ASCharacter::MoveRight(float Value)
@@ -62,6 +71,16 @@ void ASCharacter::DoJump()
 }
 
 
+void ASCharacter::BeginZoom()
+{
+    bWantsToZoom = true;
+}
+
+void ASCharacter::EndZoom()
+{
+    bWantsToZoom = false;
+}
+
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -76,6 +95,11 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
     PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ASCharacter::EndCrouch);
 
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASCharacter::DoJump);
+
+    PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &ASCharacter::BeginZoom);
+    PlayerInputComponent->BindAction("Zoom", IE_Released, this, &ASCharacter::EndZoom);
+
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASCharacter::Fire);
 
 }
 
@@ -99,6 +123,13 @@ void ASCharacter::Pickup(AActor* Actor)
     }
 }
 
+void ASCharacter::Fire()
+{
+    if (CurrentWeapon)
+    {
+        CurrentWeapon->Fire();
+    }
+}
 
 
 

@@ -14,8 +14,12 @@ class COOPGAME_API ASTracingWeapon : public ASWeapon
 {
 	GENERATED_BODY()
 
-protected:
+public:
 
     virtual void Fire() override;
+
+protected:
+
+    void PlayFireEffects(const FVector TracerEndPoint);
 
 };

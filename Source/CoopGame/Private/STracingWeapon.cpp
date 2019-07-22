@@ -9,6 +9,17 @@
 #include "Particles/ParticleSystemComponent.h"
 
 
+static int32 DebugWeaponDrawing = 0;
+
+FAutoConsoleVariableRef CVARDebugWeaponDrawing(
+    TEXT("COOP.DebugWeapons"),
+    DebugWeaponDrawing,
+    TEXT("Draw Debug Lines for Weapons"),
+    ECVF_Cheat
+);
+
+
+
 
 void ASTracingWeapon::Fire()
 {
@@ -58,19 +69,37 @@ void ASTracingWeapon::Fire()
         }
     }
 
+    if (DebugWeaponDrawing > 0)
+    {
+        DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.f, 0, 1.f);
+    }
+
+
+
+    PlayFireEffects(TracerEndPoint);
+}
+
+
+void ASTracingWeapon::PlayFireEffects(const FVector TracerEndPoint)
+{
+    if (MuzzleEffect)
+    {
+        UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComponent, MuzzleSocketName);
+    }
+
     if (TracerEffect)
     {
         FVector MuzzleLocation = MeshComponent->GetSocketLocation(MuzzleSocketName);
-        UParticleSystemComponent* TracerComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleLocation);
+
+        UParticleSystemComponent* TracerComp = UGameplayStatics::SpawnEmitterAtLocation(
+            GetWorld(),
+            TracerEffect,
+            MuzzleLocation
+        );
 
         if (TracerComp)
         {
             TracerComp->SetVectorParameter(TracerTargetName, TracerEndPoint);
         }
-    }
-
-    if (MuzzleEffect)
-    {
-        UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComponent, MuzzleSocketName);
     }
 }

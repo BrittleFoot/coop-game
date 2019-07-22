@@ -8,8 +8,6 @@
 // Sets default values
 ASWeapon::ASWeapon()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
     DamageAmount = 20.f;
 
     MuzzleSocketName = "MuzzleSocket";
@@ -18,20 +16,6 @@ ASWeapon::ASWeapon()
     MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("MeshComponent");
 
     RootComponent = MeshComponent;
-}
-
-// Called when the game starts or when spawned
-void ASWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-// Called every frame
-void ASWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 
