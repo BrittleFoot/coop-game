@@ -62,9 +62,20 @@ void ASTracingWeapon::Fire()
         AActor* HitActor = Hit.GetActor();
         TracerEndPoint = Hit.ImpactPoint;
 
+        float ActualDamage = DamageAmount;
+
+        EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+        if (SurfaceType == SURFACE__FLESH_VULNERABLE)
+        {
+            ActualDamage *= 3.f;
+        }
+
+        //////
+
         UGameplayStatics::ApplyPointDamage(
             HitActor,
-            DamageAmount,
+            ActualDamage,
             ShootDirection,
             Hit,
             MyOwner->GetInstigatorController(),
@@ -72,7 +83,8 @@ void ASTracingWeapon::Fire()
             DamageType
         );
 
-        EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+        //////
+
 
         UParticleSystem* SelectedEffect = DefaultImpactEffect;
         switch (SurfaceType)
@@ -102,6 +114,8 @@ void ASTracingWeapon::Fire()
 
 
     PlayFireEffects(TracerEndPoint);
+
+    Super::Fire();
 }
 
 

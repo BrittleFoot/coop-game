@@ -40,6 +40,8 @@ void ASProjectileWeapon::Fire()
     GetWorld()->SpawnActor<ASProjectile>(ProjectileClass, SpawnLocation, EyeRotation, ActorSpawnParams);
 
     PlayFireEffects();
+
+    Super::Fire();
 }
 
 void ASProjectileWeapon::PlayFireEffects()

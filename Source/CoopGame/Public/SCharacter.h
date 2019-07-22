@@ -62,7 +62,12 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     ASWeapon* CurrentWeapon;
 
-    void Fire();
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    void StartFire();
+
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    void StopFire();
+
 
 public:
 	// Called every frame

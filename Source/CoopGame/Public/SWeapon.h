@@ -10,6 +10,7 @@
 class USkeletalMeshComponent;
 class UDamageType;
 class UParticleSystem;
+struct FTimerHandle;
 
 
 UCLASS()
@@ -30,6 +31,8 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
     float DamageAmount;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (ClampMin = 0.01))
+    float FireRate;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
     FName MuzzleSocketName;
@@ -56,10 +59,19 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     TSubclassOf<UCameraShake> FireCamShake;
 
+    virtual void Fire();
+
+    FTimerHandle TimerHandle_TimeBetweenShots;
+
+    float LastFiredTime;
+
 public:
 
     UFUNCTION(BlueprintCallable, Category = "Weapon")
-    virtual void Fire();
+    virtual void StartFire();
+
+    UFUNCTION(BlueprintCallable, Category = "Weapon")
+    virtual void StopFire();
 
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
