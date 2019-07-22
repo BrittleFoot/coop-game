@@ -31,4 +31,6 @@ protected:
     UPROPERTY(VisibleAnywhere, Category = "Weapon (Projectile)")
     float LaunchPower;
 
+    void PlayFireEffects();
+
 };

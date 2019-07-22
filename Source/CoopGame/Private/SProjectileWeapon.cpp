@@ -39,9 +39,23 @@ void ASProjectileWeapon::Fire()
 
     GetWorld()->SpawnActor<ASProjectile>(ProjectileClass, SpawnLocation, EyeRotation, ActorSpawnParams);
 
+    PlayFireEffects();
+}
 
+void ASProjectileWeapon::PlayFireEffects()
+{
     if (MuzzleEffect)
     {
         UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComponent, MuzzleSocketName);
+    }
+
+    APawn* MyOwner = Cast<APawn>(GetOwner());
+    if (MyOwner)
+    {
+        APlayerController* Controller = Cast<APlayerController>(MyOwner->GetController());
+        if (Controller && FireCamShake)
+        {
+            Controller->ClientPlayCameraShake(FireCamShake);
+        }
     }
 }

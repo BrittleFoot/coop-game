@@ -102,4 +102,14 @@ void ASTracingWeapon::PlayFireEffects(const FVector TracerEndPoint)
             TracerComp->SetVectorParameter(TracerTargetName, TracerEndPoint);
         }
     }
+
+    APawn* MyOwner = Cast<APawn>(GetOwner());
+    if (MyOwner)
+    {
+        APlayerController* Controller = Cast<APlayerController>(MyOwner->GetController());
+        if (Controller && FireCamShake)
+        {
+            Controller->ClientPlayCameraShake(FireCamShake);
+        }
+    }
 }
