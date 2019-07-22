@@ -49,7 +49,13 @@ void ASTracingWeapon::Fire()
     FVector TracerEndPoint = TraceEnd;
 
     FHitResult Hit;
-    bool bBlockingHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams);
+    bool bBlockingHit = GetWorld()->LineTraceSingleByChannel(
+        Hit,
+        EyeLocation,
+        TraceEnd,
+        COLLISION_WEAPON,
+        QueryParams
+    );
 
     if (bBlockingHit)
     {
