@@ -59,6 +59,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     TSubclassOf<UCameraShake> FireCamShake;
 
+    UFUNCTION(Category = "Weapon")
     virtual void Fire();
 
     FTimerHandle TimerHandle_TimeBetweenShots;

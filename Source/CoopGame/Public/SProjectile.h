@@ -42,12 +42,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile")
     float DamageRadius;
 
-    UFUNCTION()
-    void Explode(AActor* Actor);
-
-
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
+    UFUNCTION(BlueprintCallable, Category = "Projectile")
+    void Explode(AActor* Actor);
 
 };

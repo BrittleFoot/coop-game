@@ -23,7 +23,7 @@ void ASProjectileWeapon::Fire()
     FVector EyeLocation;
     FRotator EyeRotation;
     MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
-    EyeRotation.Pitch += 5.f;
+    EyeRotation.Pitch += 3.f;
 
     FVector ShootDirection = EyeRotation.Vector();
     FVector SpawnLocation = MeshComponent->GetSocketLocation(MuzzleSocketName);

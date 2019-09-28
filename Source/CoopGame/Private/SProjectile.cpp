@@ -27,8 +27,6 @@ FAutoConsoleVariableRef CVARDebugProjectileDrawing(
 // Sets default values
 ASProjectile::ASProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 
     CollisionComponent = CreateDefaultSubobject<USphereComponent>("CollisionComponent");
     CollisionComponent->InitSphereRadius(15.0f);
@@ -64,13 +62,6 @@ void ASProjectile::BeginPlay()
     OnDestroyed.AddDynamic(this, &ASProjectile::Explode);
 }
 
-// Called every frame
-void ASProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 
 void ASProjectile::Explode(AActor* Actor)
 {
@@ -100,4 +91,6 @@ void ASProjectile::Explode(AActor* Actor)
     {
         UParticleSystemComponent* ExplosionComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
     }
+
+    Destroy();
 }
