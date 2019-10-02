@@ -32,8 +32,8 @@ void ASWeapon::Fire()
 void ASWeapon::StartFire()
 {
     // shots per second
-    float FireDelay = 1.f / FireRate;
-    float FirstDelay = FMath::Max(0.f, LastFiredTime + FireDelay - GetWorld()->TimeSeconds);
+    const float FireDelay = 1.f / FireRate;
+    const float FirstDelay = FMath::Max(0.f, LastFiredTime + FireDelay - GetWorld()->TimeSeconds);
     GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, FireDelay, true, FirstDelay);
 }
 

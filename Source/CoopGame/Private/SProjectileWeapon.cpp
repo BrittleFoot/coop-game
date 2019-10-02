@@ -3,9 +3,7 @@
 
 #include "SProjectileWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystem.h"
 #include "SProjectile.h"
 
 
@@ -25,7 +23,6 @@ void ASProjectileWeapon::Fire()
     MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
     EyeRotation.Pitch += 3.f;
 
-    FVector ShootDirection = EyeRotation.Vector();
     FVector SpawnLocation = MeshComponent->GetSocketLocation(MuzzleSocketName);
 
     FCollisionQueryParams QueryParams;

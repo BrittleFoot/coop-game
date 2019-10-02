@@ -9,6 +9,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class USHealthComponent;
 class ASWeapon;
 
 
@@ -35,38 +36,58 @@ protected:
 
 	void DoJump();
 
+	void DoThrowItem();
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+	void OnThrowItem();
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComponent;
 
-    UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-    bool OnPickup(AActor* Actor);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USHealthComponent* HealthComponent;
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+	bool OnPickup(AActor* Actor);
 
 
-    bool bWantsToZoom;
+	bool bWantsToZoom;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Player")
-    float ZoomedFOV;
+	// Pawn died previously
+	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	bool bDied;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100))
-    float ZoomInterpSpeed;
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float ZoomedFOV;
 
-    float DefaultFOV;
+	UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100))
+	float ZoomInterpSpeed;
 
-    void BeginZoom();
+	float DefaultFOV;
 
-    void EndZoom();
+	void BeginZoom();
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-    ASWeapon* CurrentWeapon;
+	void EndZoom();
 
-    UFUNCTION(BlueprintCallable, Category = "Character")
-    void StartFire();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	ASWeapon* CurrentWeapon;
 
-    UFUNCTION(BlueprintCallable, Category = "Character")
-    void StopFire();
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	void StartFire();
+
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	void StopFire();
+
+	UFUNCTION()
+	void OnHealthChanged(USHealthComponent* OwningHealthComponent,
+	                     float Health,
+	                     float HealthDelta,
+	                     const class UDamageType* DamageType,
+	                     class AController* InstigatedBy,
+	                     AActor* DamageCauser);
 
 
 public:
@@ -76,9 +97,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-    virtual FVector GetPawnViewLocation() const override;
+	virtual FVector GetPawnViewLocation() const override;
 
-    UFUNCTION(BlueprintCallable, Category = "Character")
-    void Pickup(AActor* Actor);
-
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	void Pickup(AActor* Actor);
 };

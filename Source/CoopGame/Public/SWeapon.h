@@ -10,6 +10,7 @@
 class USkeletalMeshComponent;
 class UDamageType;
 class UParticleSystem;
+class UCameraShake;
 struct FTimerHandle;
 
 
@@ -22,11 +23,13 @@ public:
 	// Sets default values for this actor's properties
 	ASWeapon();
 
-protected:
 
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     USkeletalMeshComponent* MeshComponent;
+
+protected:
+
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
     float DamageAmount;
