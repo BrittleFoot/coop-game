@@ -6,7 +6,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "DrawDebugHelpers.h"
 
@@ -48,7 +47,7 @@ ASProjectile::ASProjectile()
     ProjectileMovement->Bounciness = 0.3;
     ProjectileMovement->Friction = 0.3;
 
-    BaseDamage = 100.f;
+    BaseDamage = 60.f;
     DamageRadius = 150.f;
 
     InitialLifeSpan = 1.0f;
@@ -69,6 +68,12 @@ void ASProjectile::Explode(AActor* Actor)
     if (WeaponOwner == nullptr)
         return;
 
+	if (bExploded)
+	{
+		return;
+	}
+
+	bExploded = true;
 
     TArray<AActor*> IgnoreActors;
     UGameplayStatics::ApplyRadialDamage(

@@ -35,6 +35,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
 	float Health;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "HealthComponent")
+	bool bCanBeHealed;
+
 	UFUNCTION()
 	void HandleTakeAnyDamage(AActor* DamagedActor,
 	                         float Damage,

@@ -42,6 +42,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile")
     float DamageRadius;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Projectile")
+	bool bExploded;
+
 public:
 
     UFUNCTION(BlueprintCallable, Category = "Projectile")

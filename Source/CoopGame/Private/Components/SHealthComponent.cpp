@@ -24,6 +24,7 @@ void USHealthComponent::BeginPlay()
 	}
 
 	Health = DefaultHealth;
+	bCanBeHealed = true;
 }
 
 void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor,
@@ -32,7 +33,7 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor,
                                             AController* InstigatedBy,
                                             AActor* DamageCauser)
 {
-	if (Damage <= 0.0f)
+	if (Damage == 0.0f || !bCanBeHealed && Damage < 0.0f)
 	{
 		return;
 	}
