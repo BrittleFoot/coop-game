@@ -9,6 +9,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "CoopGame.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Net/UnrealNetwork.h"
 
 
 static int32 DebugWeaponDrawing = 0;
@@ -25,7 +26,13 @@ FAutoConsoleVariableRef CVARDebugWeaponDrawing(
 
 void ASTracingWeapon::Fire()
 {
-    // trace from pawn eyes to crosshair
+	Super::Fire();
+	if (Role < ROLE_Authority)
+	{
+		ServerFire();
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Tracing fire"));
 
     AActor* MyOwner = GetOwner();
 
@@ -47,7 +54,8 @@ void ASTracingWeapon::Fire()
     QueryParams.bReturnPhysicalMaterial = true;
 
     FVector TracerEndPoint = TraceEnd;
-
+	EPhysicalSurface SurfaceType = SurfaceType_Default;
+	
     FHitResult Hit;
     bool bBlockingHit = GetWorld()->LineTraceSingleByChannel(
         Hit,
@@ -64,14 +72,12 @@ void ASTracingWeapon::Fire()
 
         float ActualDamage = DamageAmount;
 
-        EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+        SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 
         if (SurfaceType == SURFACE__FLESH_VULNERABLE)
         {
             ActualDamage *= 3.f;
         }
-
-        //////
 
         UGameplayStatics::ApplyPointDamage(
             HitActor,
@@ -83,27 +89,8 @@ void ASTracingWeapon::Fire()
             DamageType
         );
 
-        //////
-
-
-        UParticleSystem* SelectedEffect = DefaultImpactEffect;
-        switch (SurfaceType)
-        {
-            case SURFACE__FLESH_DEFAULT:
-                SelectedEffect = FleshImpactEffect;
-                break;
-            case SURFACE__FLESH_VULNERABLE:
-                SelectedEffect = VulnerableImpactEffect;
-                break;
-            default:
-                break;
-        }
-
-
-        if (SelectedEffect)
-        {
-            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-        }
+		PlayImpactEffects(SurfaceType, Hit.ImpactPoint);
+		
     }
 
     if (DebugWeaponDrawing > 0)
@@ -111,11 +98,13 @@ void ASTracingWeapon::Fire()
         DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.f, 0, 1.f);
     }
 
-
-
     PlayFireEffects(TracerEndPoint);
 
-    Super::Fire();
+	if (Role == ROLE_Authority)
+	{
+		HitScanTrace.TraceTo = TracerEndPoint;
+		HitScanTrace.SurfaceType = SurfaceType;
+	}	
 }
 
 
@@ -128,7 +117,7 @@ void ASTracingWeapon::PlayFireEffects(const FVector TracerEndPoint)
 
     if (TracerEffect)
     {
-        FVector MuzzleLocation = MeshComponent->GetSocketLocation(MuzzleSocketName);
+	    const FVector MuzzleLocation = MeshComponent->GetSocketLocation(MuzzleSocketName);
 
         UParticleSystemComponent* TracerComp = UGameplayStatics::SpawnEmitterAtLocation(
             GetWorld(),
@@ -151,4 +140,45 @@ void ASTracingWeapon::PlayFireEffects(const FVector TracerEndPoint)
             Controller->ClientPlayCameraShake(FireCamShake);
         }
     }
+}
+
+void ASTracingWeapon::PlayImpactEffects(const EPhysicalSurface SurfaceType, const FVector ImpactPoint)
+{
+
+	UParticleSystem* SelectedEffect = DefaultImpactEffect;
+	switch (SurfaceType)
+	{
+	case SURFACE__FLESH_DEFAULT:
+		SelectedEffect = FleshImpactEffect;
+		break;
+	case SURFACE__FLESH_VULNERABLE:
+		SelectedEffect = VulnerableImpactEffect;
+		break;
+	default:
+		break;
+	}
+
+	if (SelectedEffect)
+	{
+		FVector ShotDirection = ImpactPoint - MeshComponent->GetSocketLocation(MuzzleSocketName);
+		ShotDirection.Normalize();
+		
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, ImpactPoint, ShotDirection.Rotation());
+	}
+}
+
+void ASTracingWeapon::OnRep_HitScanTrace()
+{
+	// Play Cosmetic FX
+	PlayFireEffects(HitScanTrace.TraceTo);
+	PlayImpactEffects(HitScanTrace.SurfaceType, HitScanTrace.TraceTo);
+}
+
+
+
+void ASTracingWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ASTracingWeapon, HitScanTrace, COND_SkipOwner);
 }

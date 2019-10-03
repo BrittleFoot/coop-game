@@ -14,6 +14,7 @@ class UCameraShake;
 struct FTimerHandle;
 
 
+
 UCLASS()
 class COOPGAME_API ASWeapon : public AActor
 {
@@ -64,6 +65,9 @@ protected:
 
     UFUNCTION(Category = "Weapon")
     virtual void Fire();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerFire();
 
     FTimerHandle TimerHandle_TimeBetweenShots;
 

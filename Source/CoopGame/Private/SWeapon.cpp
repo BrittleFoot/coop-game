@@ -21,12 +21,33 @@ ASWeapon::ASWeapon()
     RootComponent = MeshComponent;
 
     LastFiredTime = 0.f;
+
+	SetReplicates(true);
+	NetUpdateFrequency = 66.f;
+	MinNetUpdateFrequency = 33.f;
 }
 
 
 void ASWeapon::Fire()
 {
+	if (Role < ROLE_Authority)
+	{
+		// abstract method should not call it because it duplicates logic
+	}
+	
+	UE_LOG(LogTemp, Log, TEXT("Abstract fire"));
+	
     LastFiredTime = GetWorld()->TimeSeconds;
+}
+
+void ASWeapon::ServerFire_Implementation()
+{
+	Fire();
+}
+
+bool ASWeapon::ServerFire_Validate()
+{
+	return true;
 }
 
 void ASWeapon::StartFire()

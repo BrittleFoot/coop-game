@@ -11,6 +11,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class USHealthComponent;
 class ASWeapon;
+class ASPickupItem;
 
 
 UCLASS()
@@ -37,10 +38,13 @@ protected:
 	void DoJump();
 
 	void DoThrowItem();
-	
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnThrowItem();
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character")
+	TSubclassOf<ASPickupItem> ThrowItemClass;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComponent;
 
@@ -49,7 +53,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USHealthComponent* HealthComponent;
-	
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	bool OnPickup(AActor* Actor);
 
@@ -72,7 +76,7 @@ protected:
 
 	void EndZoom();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category = "Components")
 	ASWeapon* CurrentWeapon;
 
 	UFUNCTION(BlueprintCallable, Category = "Character")
@@ -89,6 +93,8 @@ protected:
 	                     class AController* InstigatedBy,
 	                     AActor* DamageCauser);
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 
 public:
 	// Called every frame
@@ -100,5 +106,7 @@ public:
 	virtual FVector GetPawnViewLocation() const override;
 
 	UFUNCTION(BlueprintCallable, Category = "Character")
-	void Pickup(AActor* Actor);
+	void Pickup(ASPickupItem* Item);
+
+	
 };

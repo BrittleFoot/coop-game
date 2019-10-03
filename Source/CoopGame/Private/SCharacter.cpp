@@ -8,8 +8,11 @@
 #include "Components/InputComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SHealthComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "CoopGame.h"
 #include "SWeapon.h"
+#include "SPickupItem.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -80,8 +83,43 @@ void ASCharacter::DoJump()
 
 void ASCharacter::DoThrowItem()
 {
+	if (!ThrowItemClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ThrowItemClass must be specified"));
+		return;
+	}
+
 	if (CurrentWeapon)
 	{
+		CurrentWeapon->SetActorHiddenInGame(true);
+		CurrentWeapon->SetOwner(nullptr);
+		CurrentWeapon->DetachFromActor(FDetachmentTransformRules(
+			EDetachmentRule::KeepWorld,
+			EDetachmentRule::KeepRelative,
+			EDetachmentRule::KeepRelative,
+			true
+		));
+
+
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		if (Role == ROLE_Authority)
+		{
+			ASPickupItem* PickupItem = Cast<ASPickupItem>(GetWorld()->SpawnActor<AActor>(
+				ThrowItemClass.Get(),
+				GetActorTransform(),
+				SpawnParameters
+			));
+
+			if (PickupItem)
+			{
+				PickupItem->SetItem(CurrentWeapon);
+				StopFire();
+				CurrentWeapon = nullptr;
+			}
+		}
+
 		OnThrowItem();
 	}
 }
@@ -132,11 +170,28 @@ FVector ASCharacter::GetPawnViewLocation() const
 }
 
 
-void ASCharacter::Pickup(AActor* Actor)
+void ASCharacter::Pickup(ASPickupItem* Item)
 {
-	if (OnPickup(Actor))
+	if (CurrentWeapon)
 	{
-		Actor->Destroy();
+		return;
+	}
+
+	if (!Item)
+	{
+		return;
+	}
+
+	if (Cast<ASWeapon>(Item->Peek()))
+	{
+		CurrentWeapon = Cast<ASWeapon>(Item->Pickup());
+		CurrentWeapon->SetOwner(this);
+
+		CurrentWeapon->AttachToComponent(
+			GetMesh(),
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			FName(TEXT("WeaponSocket"))
+		);
 	}
 }
 
@@ -177,4 +232,11 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComponent,
 
 		SetLifeSpan(10.f);
 	}
+}
+
+void ASCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASCharacter, CurrentWeapon);
 }

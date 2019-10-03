@@ -6,6 +6,23 @@
 #include "SWeapon.h"
 #include "STracingWeapon.generated.h"
 
+
+// info about of a single hitscan weapon linetrace
+USTRUCT()
+struct FHitScanTrace
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TEnumAsByte<EPhysicalSurface> SurfaceType;
+
+	UPROPERTY()
+	FVector_NetQuantize TraceTo;
+};
+
+
 /**
  *
  */
@@ -16,10 +33,20 @@ class COOPGAME_API ASTracingWeapon : public ASWeapon
 
 public:
 
-    virtual void Fire() override;
+	virtual void Fire() override;
 
 protected:
 
-    void PlayFireEffects(const FVector TracerEndPoint);
+	void PlayFireEffects(const FVector TracerEndPoint);
 
+	void PlayImpactEffects(const EPhysicalSurface SurfaceType, const FVector ImpactPoint);
+
+	UPROPERTY(ReplicatedUsing = OnRep_HitScanTrace)
+	FHitScanTrace HitScanTrace;
+
+	UFUNCTION()
+	void OnRep_HitScanTrace();
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 };

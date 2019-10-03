@@ -10,7 +10,13 @@
 
 void ASProjectileWeapon::Fire()
 {
-    // trace from pawn eyes to crosshair
+	Super::Fire();
+	if (Role < ROLE_Authority)
+	{
+		ServerFire();
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Projectile fire"));
 
     APawn* MyOwner = Cast<APawn>(GetOwner());
 
@@ -37,8 +43,6 @@ void ASProjectileWeapon::Fire()
     GetWorld()->SpawnActor<ASProjectile>(ProjectileClass, SpawnLocation, EyeRotation, ActorSpawnParams);
 
     PlayFireEffects();
-
-    Super::Fire();
 }
 
 void ASProjectileWeapon::PlayFireEffects()
